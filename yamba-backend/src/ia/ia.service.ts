@@ -79,6 +79,9 @@ export class IaService {
    * WhatsApp. Si l'IA signale ne pas savoir répondre (ou en cas d'échec d'une
    * action), la conversation passe au statut "attention". Ne fait rien si le
    * commerçant a "pris la main" sur la conversation (iaSuspendueJusqua futur).
+   * Si l'appel à l'API IA échoue lui-même (crédit épuisé, quota, panne réseau),
+   * envoie un message de secours générique au client et transfère au commerçant
+   * plutôt que de laisser la conversation sans réponse.
    */
   async genererReponse(conversationId: string): Promise<void> {
     const conversation = await this.prisma.conversation.findUniqueOrThrow({
@@ -106,7 +109,38 @@ export class IaService {
       content: message.contenu,
     }));
 
-    const reponseIa = await this.appellerClaude(systemPrompt, historique, conversation.commercant);
+    let reponseIa: ReponseIa;
+    try {
+      reponseIa = await this.appellerClaude(systemPrompt, historique, conversation.commercant);
+    } catch (error) {
+      // Panne de l'API IA (crédit épuisé, quota, réseau...) : le client ne doit
+      // jamais rester sans réponse ni le commerçant sans être prévenu qu'il
+      // doit reprendre la main manuellement.
+      this.logger.error(
+        `Échec de l'appel à l'API IA pour la conversation ${conversationId}, transfert au commerçant : ${(error as Error).message}`,
+      );
+      const reponseTexteSecours =
+        "Merci pour votre message. Un membre de notre équipe va revenir vers vous rapidement.";
+      await this.prisma.message.create({
+        data: { conversationId, expediteur: 'ia', contenu: reponseTexteSecours },
+      });
+      await this.prisma.conversation.update({
+        where: { id: conversationId },
+        data: { statut: 'attention' },
+      });
+      try {
+        await this.whatsappService.envoyerMessage(conversation.clientTelephone, reponseTexteSecours);
+      } catch (envoiError) {
+        // L'essentiel (message de secours + statut "attention") est déjà en
+        // base : on n'échoue pas toute la requête si même l'envoi échoue,
+        // pour éviter que Meta ne retente indéfiniment le même webhook.
+        this.logger.error(
+          `Échec de l'envoi du message de secours sur la conversation ${conversationId} : ${(envoiError as Error).message}`,
+        );
+      }
+      return;
+    }
+
     const { reponseTexte, necessiteTransfert } = await this.executerAction(reponseIa, conversation);
 
     await this.prisma.message.create({
