@@ -1,3 +1,14 @@
+// Polyfill : sur Node 18 (utilisé par certains hébergeurs comme Railway),
+// `globalThis.crypto` (Web Crypto API) n'est pas exposé sans le flag
+// --experimental-global-webcrypto. @nestjs/schedule appelle `crypto.randomUUID()`
+// en supposant ce global présent (nécessaire dès qu'un @Cron() est déclaré),
+// ce qui plante au démarrage avec "ReferenceError: crypto is not defined".
+import { webcrypto } from 'node:crypto';
+if (!globalThis.crypto) {
+  // @ts-expect-error -- webcrypto n'est pas typé strictement comme `Crypto` du DOM.
+  globalThis.crypto = webcrypto;
+}
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
