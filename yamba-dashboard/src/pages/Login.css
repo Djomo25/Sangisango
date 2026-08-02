@@ -1,0 +1,133 @@
+.login-ecran {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--paper);
+  padding: 24px;
+}
+
+.login-carte {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--paper);
+  border: 1.5px solid var(--paper-dim);
+  border-radius: 12px;
+  padding: 32px 28px;
+}
+
+.login-titre {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.login-soustitre {
+  font-family: var(--font-body);
+  color: var(--text-body);
+  margin: 0 0 24px;
+  font-size: 0.9rem;
+}
+
+.login-champ {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.login-label {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--paper-dim);
+  background-color: #fff;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-dark);
+}
+
+.login-input:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.login-bouton {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 100px;
+  background-color: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.login-bouton:hover:not(:disabled) {
+  background-color: var(--gold-deep);
+}
+
+.login-bouton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-erreur {
+  background-color: var(--warn-bg);
+  color: var(--warn);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.login-retour {
+  background: none;
+  border: none;
+  color: var(--info);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.login-mock {
+  background-color: var(--info-bg);
+  color: var(--info);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.login-lien-inscription {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-body);
+}
+
+.login-lien-inscription a {
+  color: var(--gold-deep);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-lien-inscription a:hover {
+  text-decoration: underline;
+}

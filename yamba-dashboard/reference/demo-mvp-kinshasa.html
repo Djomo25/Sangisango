@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yamba — Aperçu de démonstration</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink:#161C36;
+  --ink-soft:#232B52;
+  --ink-line: rgba(255,255,255,.09);
+  --paper:#FAF7F1;
+  --paper-dim:#F1ECE1;
+  --gold:#F3B23E;
+  --gold-deep:#D89320;
+  --clay:#C1512E;
+  --ok:#2F9E5B; --ok-bg:#E4F5EA;
+  --warn:#C8862A; --warn-bg:#FCF1DC;
+  --info:#3E6FD9; --info-bg:#E7EEFC;
+  --muted:#8B93A6; --muted-bg:#EEF0F5;
+  --text-dark:#1B2140;
+  --text-body:#3C4260;
+  --wa-teal:#075E54;
+  --wa-bg:#E9E0D2;
+  --wa-out:#D9FDD3;
+  --font-display:'Sora',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:
+    radial-gradient(circle at 12% -10%, #2b3768 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, #2a2450 0%, transparent 40%),
+    var(--ink);
+  color:var(--text-dark);
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+
+.app{max-width:1100px;margin:0 auto;padding:0 20px 80px;}
+
+/* ---------- TOP BAR ---------- */
+.topbar{padding:36px 0 18px;display:flex;flex-direction:column;gap:18px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:14px;height:14px;border-radius:4px;background:var(--gold);flex-shrink:0;}
+.brand-name{font-family:var(--font-display);font-weight:800;font-size:22px;color:#F7F4EC;letter-spacing:.2px;}
+.brand-sub{font-size:12px;color:var(--muted);font-weight:500;margin-left:2px;}
+.roadmap-chip{align-self:flex-start;background:var(--ink-soft);border:1px solid var(--ink-line);color:#D9CFA0;font-size:12px;padding:7px 14px;border-radius:100px;display:flex;align-items:center;gap:8px;}
+.roadmap-chip b{color:var(--gold);font-weight:600;}
+
+.thesis{font-family:var(--font-display);font-weight:700;font-size:clamp(21px,3.4vw,30px);line-height:1.28;color:#F7F4EC;max-width:640px;margin:6px 0 2px;}
+.thesis span{color:var(--gold);}
+.thesis-sub{font-size:14.5px;color:var(--muted);max-width:560px;line-height:1.6;margin-bottom:6px;}
+
+/* ---------- STEP NAV ---------- */
+.stepnav{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 6px;}
+.step-btn{display:flex;align-items:center;gap:9px;padding:10px 16px 10px 10px;border-radius:100px;background:var(--ink-soft);border:1px solid var(--ink-line);transition:all .2s ease;}
+.step-btn .num{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.08);color:#C7CCE0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;transition:all .2s ease;}
+.step-btn .lbl{font-size:13.5px;font-weight:600;color:#C7CCE0;text-align:left;}
+.step-btn .lbl small{display:block;font-weight:500;font-size:11px;color:var(--muted);}
+.step-btn.active{background:var(--gold);border-color:var(--gold);}
+.step-btn.active .num{background:var(--ink);color:var(--gold);}
+.step-btn.active .lbl, .step-btn.active .lbl small{color:var(--ink);}
+.step-btn:hover:not(.active){border-color:rgba(243,178,62,.5);}
+
+/* ---------- SCREENS ---------- */
+.screen{display:none;padding-top:34px;}
+.screen.active{display:block;animation:fadein .35s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.context-copy{max-width:600px;margin:0 auto 26px;text-align:center;}
+.eyebrow{display:inline-block;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);background:var(--ink-soft);border:1px solid var(--ink-line);padding:5px 12px;border-radius:100px;margin-bottom:14px;}
+.context-copy h2{font-family:var(--font-display);font-size:clamp(19px,2.6vw,25px);color:#F7F4EC;margin:0 0 10px;line-height:1.35;}
+.context-copy p{font-size:14px;color:var(--muted);line-height:1.6;margin:0 auto;max-width:480px;}
+.replay-btn{margin-top:16px;display:inline-flex;align-items:center;gap:7px;background:var(--ink-soft);border:1px solid var(--ink-line);color:#E7DEC0;font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;transition:border-color .2s;}
+.replay-btn:hover{border-color:var(--gold);}
+
+/* ---------- DEVICE FRAMES ---------- */
+.phone-frame{width:min(380px,92vw);margin:0 auto;background:#0B0E22;border-radius:42px;padding:14px;box-shadow:0 40px 70px -25px rgba(0,0,0,.6);position:relative;}
+.phone-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:90px;height:20px;background:#0B0E22;border-radius:0 0 14px 14px;z-index:5;}
+.phone-screen{background:var(--paper);border-radius:28px;overflow:hidden;min-height:660px;display:flex;flex-direction:column;}
+
+.laptop-frame{max-width:960px;margin:0 auto;background:#0B0E22;border-radius:16px;padding:10px 10px 0;box-shadow:0 45px 80px -30px rgba(0,0,0,.6);}
+.browser-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;}
+.browser-dots{display:flex;gap:6px;}
+.browser-dots span{width:9px;height:9px;border-radius:50%;display:block;}
+.browser-dots span:nth-child(1){background:#C1512E;}
+.browser-dots span:nth-child(2){background:#E1A83B;}
+.browser-dots span:nth-child(3){background:#2F9E5B;}
+.browser-url{flex:1;background:rgba(255,255,255,.07);color:#B7BEDA;font-family:var(--font-mono);font-size:11.5px;padding:6px 12px;border-radius:7px;}
+.laptop-screen{background:var(--paper);border-radius:10px 10px 0 0;overflow:hidden;min-height:560px;}
+
+/* ---------- ONBOARDING ---------- */
+.onb-dots{display:flex;justify-content:center;gap:6px;padding:18px 20px 6px;}
+.onb-dot{width:22px;height:4px;border-radius:3px;background:var(--paper-dim);transition:background .2s;}
+.onb-dot.current{background:var(--gold-deep);}
+.onb-dot.done{background:#D8C79A;}
+.onb-panels{flex:1;padding:18px 24px 10px;overflow:hidden;position:relative;}
+.onb-panel{display:none;animation:onbin .3s ease;}
+.onb-panel.active{display:block;}
+@keyframes onbin{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:translateX(0);}}
+.onb-eyebrow{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold-deep);font-weight:600;}
+.onb-panel h3{font-family:var(--font-display);font-size:18px;margin:6px 0 4px;color:var(--text-dark);}
+.onb-panel .onb-desc{font-size:12.5px;color:var(--text-body);margin:0 0 16px;line-height:1.5;}
+.fake-field{margin-bottom:12px;}
+.fake-field label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px;}
+.fake-field .val{background:#fff;border:1.5px solid var(--paper-dim);border-radius:10px;padding:10px 13px;font-size:13.5px;color:var(--text-dark);font-weight:500;}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{background:#fff;border:1.5px solid var(--paper-dim);border-radius:100px;padding:6px 12px;font-size:12px;color:var(--text-body);font-weight:600;}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--gold);}
+.svc-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1.5px solid var(--paper-dim);border-radius:10px;padding:9px 13px;margin-bottom:8px;}
+.svc-row .name{font-size:13px;font-weight:600;color:var(--text-dark);}
+.svc-row .price{font-family:var(--font-mono);font-size:12px;color:var(--clay);font-weight:600;}
+.add-line{font-size:12.5px;color:var(--muted);font-weight:600;padding:8px 0;}
+.faq-item{background:#fff;border:1.5px solid var(--paper-dim);border-radius:10px;padding:11px 13px;margin-bottom:9px;}
+.faq-item .q{font-size:12.5px;font-weight:700;color:var(--text-dark);margin-bottom:3px;}
+.faq-item .a{font-size:12px;color:var(--text-body);line-height:1.5;}
+.tone-cards{display:flex;flex-direction:column;gap:8px;}
+.tone-card{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--paper-dim);border-radius:12px;padding:11px 13px;}
+.tone-card.on{border-color:var(--gold-deep);background:#FFF8E9;}
+.tone-card .emoji{font-size:18px;}
+.tone-card .t{font-size:13px;font-weight:700;color:var(--text-dark);}
+.tone-card .d{font-size:11px;color:var(--muted);}
+.onb-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 22px;}
+.btn-ghost{background:transparent;border:1.5px solid var(--paper-dim);color:var(--text-body);font-size:13px;font-weight:600;padding:10px 16px;border-radius:100px;}
+.btn-ghost.small{padding:7px 13px;font-size:12px;}
+.btn-ghost.tiny{padding:5px 10px;font-size:11.5px;}
+.btn-primary{background:var(--ink);color:var(--gold);font-size:13.5px;font-weight:700;padding:11px 20px;border-radius:100px;transition:transform .15s;}
+.btn-primary:hover{transform:translateY(-1px);}
+.btn-primary:disabled{opacity:1;cursor:default;background:var(--ok);color:#fff;transform:none;}
+.btn-primary.small{padding:7px 14px;font-size:12px;}
+
+.recap-panel{text-align:center;padding-top:6px;}
+.recap-check{width:46px;height:46px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;}
+.recap-panel h3{font-size:18px;}
+.wa-link-box{background:#fff;border:1.5px dashed #D8C79A;border-radius:12px;padding:12px;display:flex;align-items:center;gap:8px;margin:14px 0 8px;}
+.wa-link-box span{font-family:var(--font-mono);font-size:12px;color:var(--text-dark);flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.qr-box{width:88px;height:88px;margin:14px auto 6px;background:#fff;border:1.5px solid var(--paper-dim);border-radius:10px;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:2px;padding:8px;}
+.qr-box i{background:var(--ink);border-radius:1px;}
+.qr-box i:nth-child(3n){background:transparent;}
+.qr-box i:nth-child(7n){background:transparent;}
+.qr-cap{font-size:10.5px;color:var(--muted);margin-bottom:14px;}
+.meta-note{background:var(--muted-bg);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--text-body);line-height:1.5;text-align:left;margin-bottom:16px;}
+.cta-final{width:100%;background:var(--ink);color:var(--gold);font-weight:700;font-size:13.5px;padding:13px;border-radius:12px;}
+
+/* ---------- WHATSAPP CONNECT STEP ---------- */
+.fb-connect-box{background:#fff;border:1.5px solid var(--paper-dim);border-radius:14px;padding:22px 16px;text-align:center;margin-top:6px;}
+.fb-connect-box .wa-glyph{width:46px;height:46px;border-radius:50%;background:var(--wa-teal);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;}
+.fb-connect-box p{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px;}
+.btn-fb{display:inline-flex;align-items:center;gap:9px;background:#1877F2;color:#fff;font-weight:700;font-size:13px;padding:11px 20px;border-radius:10px;width:100%;justify-content:center;transition:opacity .15s;}
+.btn-fb:hover{opacity:.92;}
+.btn-fb .fb-icon{width:18px;height:18px;border-radius:4px;background:#fff;color:#1877F2;font-family:var(--font-display);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fb-connect-box.connected{border-color:var(--ok);background:var(--ok-bg);}
+.fb-connected-row{display:flex;align-items:center;gap:10px;justify-content:center;}
+.fb-connected-check{width:32px;height:32px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.fb-connected-num{text-align:left;}
+.fb-connected-num .lbl{font-size:10.5px;color:var(--ok);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+.fb-connected-num .num{font-family:var(--font-mono);font-size:14px;color:var(--text-dark);font-weight:600;}
+
+/* ---------- WHATSAPP CHAT ---------- */
+.wa-header{background:var(--wa-teal);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:11px;}
+.wa-back{font-size:18px;opacity:.9;}
+.wa-avatar{width:34px;height:34px;border-radius:50%;background:#0c4941;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.wa-id .name{font-size:14.5px;font-weight:700;line-height:1.2;}
+.wa-id .status{font-size:11px;opacity:.75;}
+.wa-body{flex:1;padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;
+  background-color:var(--wa-bg);
+  background-image:radial-gradient(rgba(0,0,0,.045) 1px, transparent 1px);
+  background-size:15px 15px;}
+.wa-date{align-self:center;background:rgba(255,255,255,.65);color:#5b6270;font-size:11px;font-weight:600;padding:4px 11px;border-radius:8px;margin:6px 0 10px;}
+.wa-pill{align-self:center;background:rgba(255,255,255,.75);color:#4a5164;font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:10px;margin:8px 0;text-align:center;max-width:88%;}
+.bubble{max-width:78%;padding:8px 11px 9px;border-radius:11px;font-size:13.3px;line-height:1.42;position:relative;margin-bottom:2px;}
+.bubble.bot{align-self:flex-start;background:#fff;color:#111b21;border-top-left-radius:2px;box-shadow:0 1px 1px rgba(0,0,0,.07);}
+.bubble.client{align-self:flex-end;background:var(--wa-out);color:#111b21;border-top-right-radius:2px;}
+.bubble-time{display:block;text-align:right;font-size:10px;color:#6d7583;margin-top:3px;}
+.bubble.typing{display:flex;gap:4px;padding:12px 14px;}
+.bubble.typing span{width:6px;height:6px;border-radius:50%;background:#a9afc0;animation:blink 1.2s infinite;}
+.bubble.typing span:nth-child(2){animation-delay:.2s;}
+.bubble.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+.wa-inputbar{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#F0F0EF;}
+.wa-fake-input{flex:1;background:#fff;border-radius:100px;padding:9px 15px;font-size:12.5px;color:#9AA0AC;}
+.wa-send{width:34px;height:34px;border-radius:50%;background:var(--wa-teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+
+/* ---------- DASHBOARD ---------- */
+.laptop-screen{display:grid;grid-template-columns:210px 1fr;min-height:560px;}
+.dash-sidebar{background:var(--ink);padding:18px 14px;display:flex;flex-direction:column;gap:4px;}
+.dash-sidebar .brand{margin-bottom:18px;padding-left:2px;}
+.dash-sidebar .brand-name{font-size:16px;}
+.dash-nav-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:9px;color:#B9BFD6;font-size:13px;font-weight:600;margin-bottom:4px;position:relative;width:100%;text-align:left;}
+.dash-nav-item .ico{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.dash-nav-item .lbl-txt{flex:1;}
+.dash-nav-item .badge{background:var(--clay);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;flex-shrink:0;}
+.dash-nav-item.active{background:var(--ink-soft);color:#F7F4EC;}
+.dash-nav-item.active::before{content:'';position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--gold);}
+.dash-nav-label{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:2px 12px 8px;}
+.dash-nav-divider{height:1px;background:var(--ink-line);margin:10px 0 12px;}
+.dash-sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--ink-line);display:flex;align-items:center;gap:9px;}
+.dash-sidebar-foot .av{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.dash-sidebar-foot .who{font-size:11.5px;font-weight:700;color:#F7F4EC;line-height:1.3;}
+.dash-sidebar-foot .role{font-size:10px;color:var(--muted);}
+
+.dash-main{padding:20px 22px;overflow:hidden;}
+.dash-topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.dash-topbar h3{font-family:var(--font-display);font-size:18px;margin:0;color:var(--text-dark);}
+.filter-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-pill{font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:100px;background:var(--muted-bg);color:var(--text-body);}
+.filter-pill.active{background:var(--ink);color:var(--gold);}
+
+.two-col{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;}
+.conv-list{display:flex;flex-direction:column;gap:7px;max-height:460px;overflow-y:auto;padding-right:4px;}
+.conv-row{background:#fff;border:1.5px solid var(--paper-dim);border-radius:11px;padding:10px 12px;cursor:pointer;transition:border-color .15s;}
+.conv-row:hover{border-color:#D8C79A;}
+.conv-row.selected{border-color:var(--gold-deep);background:#FFFAF0;}
+.conv-row.unread .conv-name::after{content:'';display:inline-block;width:6px;height:6px;background:var(--clay);border-radius:50%;margin-left:7px;}
+.conv-row-top{display:flex;justify-content:space-between;margin-bottom:4px;}
+.conv-name{font-size:13px;font-weight:700;color:var(--text-dark);}
+.conv-time{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);}
+.conv-row-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.conv-snippet{font-size:11.5px;color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;flex-shrink:0;}
+.pill.warn{background:var(--warn-bg);color:var(--warn);}
+.pill.info{background:var(--info-bg);color:var(--info);}
+.pill.ok{background:var(--ok-bg);color:var(--ok);}
+.pill.muted{background:var(--muted-bg);color:var(--muted);}
+
+.conv-detail{background:#fff;border:1.5px solid var(--paper-dim);border-radius:12px;padding:16px;max-height:460px;overflow-y:auto;}
+.detail-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.detail-head strong{font-size:14px;color:var(--text-dark);}
+.muted-text{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+.mini-transcript{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.mini-bubble{max-width:85%;font-size:11.5px;line-height:1.4;padding:7px 10px;border-radius:9px;}
+.mini-bubble.bot{align-self:flex-start;background:var(--muted-bg);color:var(--text-dark);}
+.mini-bubble.client{align-self:flex-end;background:#DFF6E3;color:var(--text-dark);}
+.appt-box{background:var(--paper-dim);border-radius:10px;padding:11px 13px;margin-bottom:14px;}
+.appt-box-row{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-dark);margin-bottom:10px;flex-wrap:wrap;gap:4px;}
+.fix-box label{display:block;font-size:11px;font-weight:700;color:var(--text-body);margin-bottom:6px;}
+.fix-input{display:flex;align-items:center;gap:8px;background:var(--muted-bg);border-radius:9px;padding:8px 10px;}
+.fix-input span{flex:1;font-size:11.5px;color:var(--muted);}
+.hint{font-size:10px;color:var(--muted);margin:7px 0 0;line-height:1.4;}
+.empty{font-size:12px;color:var(--muted);text-align:center;padding:30px 0;}
+
+.appt-view{display:flex;flex-direction:column;gap:8px;max-height:460px;overflow-y:auto;}
+.appt-row{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid var(--paper-dim);border-radius:11px;padding:11px 14px;}
+.appt-row-when{display:flex;flex-direction:column;width:96px;flex-shrink:0;}
+.appt-day{font-size:11px;font-weight:700;color:var(--clay);}
+.appt-time{font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--text-dark);}
+.appt-row-who{flex:1;display:flex;flex-direction:column;gap:1px;}
+.appt-row-who strong{font-size:13px;color:var(--text-dark);}
+
+.settings-card{background:#fff;border:1.5px solid var(--paper-dim);border-radius:12px;padding:18px;max-width:520px;}
+.settings-card h4{font-size:13px;margin:0 0 10px;color:var(--text-dark);}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--paper-dim);font-size:12.5px;}
+.settings-row:last-child{border-bottom:none;}
+.settings-row span:first-child{color:var(--muted);}
+.settings-row span:last-child{font-weight:600;color:var(--text-dark);}
+
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#F7F4EC;font-size:12.5px;font-weight:600;padding:12px 20px;border-radius:11px;box-shadow:0 15px 35px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:all .3s ease;max-width:90vw;text-align:center;z-index:50;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.footnote{text-align:center;color:var(--muted);font-size:11.5px;margin-top:44px;line-height:1.6;}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:760px){
+  .laptop-screen{grid-template-columns:1fr;}
+  .dash-sidebar{flex-direction:row;align-items:center;overflow-x:auto;gap:8px;padding:12px;}
+  .dash-sidebar .brand{display:none;}
+  .dash-sidebar-foot{display:none;}
+  .dash-nav-label,.dash-nav-divider{display:none;}
+  .dash-nav-item{flex-shrink:0;white-space:nowrap;}
+  .dash-nav-item.active::before{left:0;top:auto;bottom:0;height:3px;width:60%;border-radius:3px 3px 0 0;}
+  .two-col{grid-template-columns:1fr;}
+  .conv-detail{max-height:none;}
+  .appt-row{flex-wrap:wrap;}
+}
+@media (max-width:480px){
+  .step-btn .lbl small{display:none;}
+}
+.two-col[hidden],.appt-view[hidden],#settingsView[hidden]{display:none !important;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">Yamba</span>
+      <span class="brand-sub">— nom provisoire</span>
+    </div>
+    <div class="roadmap-chip">📶 <b>WhatsApp</b> aujourd'hui · Messenger, Instagram, TikTok et email bientôt</div>
+    <h1 class="thesis">Le client discute normalement sur WhatsApp. <span>Vous, vous pilotez tout depuis un seul endroit.</span></h1>
+    <p class="thesis-sub">Aperçu de démonstration à présenter aux commerçants pilotes — trois écrans, dans l'ordre du parcours réel : l'inscription, la conversation avec un client, puis le tableau de bord.</p>
+
+    <div class="stepnav">
+      <button class="step-btn active" data-step="1"><span class="num">1</span><span class="lbl">Inscription<small>ce que fait le commerçant</small></span></button>
+      <button class="step-btn" data-step="2"><span class="num">2</span><span class="lbl">Conversation<small>ce que voit le client</small></span></button>
+      <button class="step-btn" data-step="3"><span class="num">3</span><span class="lbl">Tableau de bord<small>ce que voit le commerçant</small></span></button>
+    </div>
+  </div>
+
+  <!-- ===================== STEP 1 — ONBOARDING ===================== -->
+  <section class="screen active" id="step1">
+    <div class="context-copy">
+      <span class="eyebrow">Étape 1 · Onboarding</span>
+      <h2>Il clique sur votre publicité, et en quelques minutes son assistant est prêt</h2>
+      <p>Un formulaire guidé, pensé pour un commerce informel : pas de jargon, juste les informations du commerce.</p>
+    </div>
+
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="onb-dots" id="onbDots"></div>
+        <div class="onb-panels">
+
+          <div class="onb-panel" data-step="1">
+            <div class="onb-eyebrow">Bienvenue</div>
+            <h3>Créons votre assistant 👋</h3>
+            <p class="onb-desc">Deux minutes suffisent. Commençons par votre commerce.</p>
+            <div class="fake-field"><label>Nom du commerce</label><div class="val">Chez Maman Nathalie</div></div>
+            <div class="fake-field"><label>Secteur d'activité</label><div class="val">Coiffure &amp; beauté</div></div>
+          </div>
+
+          <div class="onb-panel" data-step="2">
+            <div class="onb-eyebrow">Connexion WhatsApp</div>
+            <h3>Connectons votre WhatsApp</h3>
+            <p class="onb-desc">C'est le numéro que vos clients utiliseront pour vous écrire.</p>
+            <div class="fb-connect-box" id="fbConnectBox">
+              <div class="wa-glyph">📱</div>
+              <p>Un accompagnement se fait avec vous — pas de document à fournir pour démarrer.</p>
+              <button class="btn-fb" id="fbConnectBtn"><span class="fb-icon">f</span> Se connecter avec Facebook</button>
+            </div>
+          </div>
+
+          <div class="onb-panel" data-step="3">
+            <div class="onb-eyebrow">Coordonnées</div>
+            <h3>Où êtes-vous situé ?</h3>
+            <p class="onb-desc">Votre numéro WhatsApp est déjà connecté ✓</p>
+            <div class="fake-field"><label>Commune</label><div class="val">Limete, Kinshasa</div></div>
+          </div>
+
+          <div class="onb-panel" data-step="4">
+            <div class="onb-eyebrow">Services</div>
+            <h3>Que proposez-vous ?</h3>
+            <p class="onb-desc">Avec les prix — l'assistant s'en sert pour répondre.</p>
+            <div class="svc-row"><span class="name">Tresses simples</span><span class="price">15 000 FC</span></div>
+            <div class="svc-row"><span class="name">Box braids</span><span class="price">25 000 FC</span></div>
+            <div class="svc-row"><span class="name">Manucure</span><span class="price">8 000 FC</span></div>
+            <div class="add-line">+ Ajouter un service</div>
+          </div>
+
+          <div class="onb-panel" data-step="5">
+            <div class="onb-eyebrow">FAQ personnalisée</div>
+            <h3>Les questions qu'on vous pose souvent</h3>
+            <div class="faq-item"><div class="q">Travaillez-vous le dimanche ?</div><div class="a">Oui, de 10h à 18h.</div></div>
+            <div class="faq-item"><div class="q">Faut-il apporter ses mèches ?</div><div class="a">Non, nous les fournissons sur demande.</div></div>
+            <div class="add-line">+ Ajouter une question</div>
+          </div>
+
+          <div class="onb-panel" data-step="6">
+            <div class="onb-eyebrow">Horaires</div>
+            <h3>Vos jours et heures d'ouverture</h3>
+            <div class="chip-row">
+              <span class="chip on">Lun</span><span class="chip on">Mar</span><span class="chip on">Mer</span>
+              <span class="chip on">Jeu</span><span class="chip on">Ven</span><span class="chip on">Sam</span><span class="chip">Dim</span>
+            </div>
+            <div class="fake-field" style="margin-top:14px;"><label>Heures</label><div class="val">08h30 — 18h00</div></div>
+          </div>
+
+          <div class="onb-panel" data-step="7">
+            <div class="onb-eyebrow">Ton de l'assistant</div>
+            <h3>Comment doit-il parler à vos clients ?</h3>
+            <div class="tone-cards">
+              <div class="tone-card on"><span class="emoji">🌸</span><div><div class="t">Chaleureux</div><div class="d">Convivial, quelques emojis</div></div></div>
+              <div class="tone-card"><span class="emoji">💼</span><div><div class="t">Professionnel</div><div class="d">Courtois, sobre</div></div></div>
+              <div class="tone-card"><span class="emoji">⚡</span><div><div class="t">Direct</div><div class="d">Réponses courtes, efficace</div></div></div>
+            </div>
+          </div>
+
+          <div class="onb-panel" data-step="8">
+            <div class="recap-panel">
+              <div class="recap-check">✓</div>
+              <h3>Votre assistant est en ligne</h3>
+              <p class="onb-desc">Voici le lien à mettre en bio, en publicité ou sur votre carte de visite.</p>
+              <div class="wa-link-box"><span>wa.me/243896123456</span><button class="btn-ghost tiny" id="copyLinkBtn">Copier</button></div>
+              <div class="qr-box" id="qrBox"></div>
+              <div class="qr-cap">QR code à afficher en boutique</div>
+              <div class="meta-note">🔧 Votre assistant fonctionne dès maintenant. La vérification complète de votre entreprise se fera en arrière-plan, sans rien changer pour vous.</div>
+              <button class="cta-final" id="goToChatBtn">Voir mon assistant en action →</button>
+            </div>
+          </div>
+
+        </div>
+        <div class="onb-nav" id="onbNav">
+          <button class="btn-ghost" id="onbBack">Retour</button>
+          <button class="btn-primary" id="onbNext">Continuer</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 2 — CHAT CLIENT ===================== -->
+  <section class="screen" id="step2">
+    <div class="context-copy">
+      <span class="eyebrow">Étape 2 · Ce que voit le client</span>
+      <h2>Une conversation WhatsApp normale</h2>
+      <p>Le client ne sait même pas qu'il parle à un assistant — il écrit, on lui répond, un créneau se propose de lui-même.</p>
+      <button class="replay-btn" id="replayChat">↻ Rejouer la conversation</button>
+    </div>
+
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="wa-header">
+          <span class="wa-back">←</span>
+          <div class="wa-avatar">MN</div>
+          <div class="wa-id"><div class="name">Chez Maman Nathalie</div><div class="status">Assistant actif</div></div>
+        </div>
+        <div class="wa-body" id="waBody"></div>
+        <div class="wa-inputbar">
+          <div class="wa-fake-input">Écrivez un message</div>
+          <div class="wa-send">➤</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 3 — DASHBOARD ===================== -->
+  <section class="screen" id="step3">
+    <div class="context-copy" style="max-width:680px;">
+      <span class="eyebrow">Étape 3 · Ce que voit le commerçant</span>
+      <h2>Toutes les conversations, tous les rendez-vous, un seul écran</h2>
+      <p>Accessible depuis le téléphone, sans rien installer.</p>
+    </div>
+
+    <div class="laptop-frame">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">🔒 app.yamba.cd/tableau-de-bord</div>
+      </div>
+      <div class="laptop-screen">
+        <aside class="dash-sidebar">
+          <div class="brand"><span class="brand-mark"></span><span class="brand-name" style="color:#F7F4EC;">Yamba</span></div>
+          <div class="dash-nav-label">Activité</div>
+          <button class="dash-nav-item active" data-view="conversations" data-title="Conversations"><span class="ico">💬</span><span class="lbl-txt">Conversations</span> <span class="badge">2</span></button>
+          <button class="dash-nav-item" data-view="appointments" data-title="Rendez-vous"><span class="ico">📅</span><span class="lbl-txt">Rendez-vous</span></button>
+          <div class="dash-nav-divider"></div>
+          <div class="dash-nav-label">Configuration</div>
+          <button class="dash-nav-item" data-view="settings" data-title="Mon commerce"><span class="ico">🏬</span><span class="lbl-txt">Mon commerce</span></button>
+          <div class="dash-sidebar-foot">
+            <div class="av">MN</div>
+            <div><div class="who">Maman Nathalie</div><div class="role">Coiffure &amp; beauté</div></div>
+          </div>
+        </aside>
+
+        <div class="dash-main">
+          <div class="dash-topbar">
+            <h3 id="dashViewTitle">Conversations</h3>
+            <div class="filter-pills" id="filterPills">
+              <button class="filter-pill active" data-filter="all">Toutes</button>
+              <button class="filter-pill" data-filter="attention">Nécessite intervention</button>
+              <button class="filter-pill" data-filter="en_cours">En cours</button>
+              <button class="filter-pill" data-filter="termine">Terminée</button>
+              <button class="filter-pill" data-filter="abandon">Abandonnée</button>
+            </div>
+          </div>
+
+          <div class="two-col" id="convListWrap">
+            <div class="conv-list" id="convList"></div>
+            <div class="conv-detail" id="convDetail"></div>
+          </div>
+
+          <div class="appt-view" id="apptView" hidden></div>
+
+          <div id="settingsView" hidden>
+            <div class="settings-card">
+              <h4>Informations du commerce</h4>
+              <div class="settings-row"><span>Nom</span><span>Chez Maman Nathalie</span></div>
+              <div class="settings-row"><span>Commune</span><span>Limete, Kinshasa</span></div>
+              <div class="settings-row"><span>Horaires</span><span>Lun–Sam, 08h30–18h00</span></div>
+              <div class="settings-row"><span>Ton de l'assistant</span><span>Chaleureux 🌸</span></div>
+              <div class="settings-row"><span>Services actifs</span><span>3</span></div>
+              <div class="settings-row"><span>Questions FAQ</span><span>2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="footnote">Ceci est un aperçu de démonstration — l'expérience finale du produit fini peut varier légèrement.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= STEP NAV ================= */
+let chatPlayed = false;
+function goToStep(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  document.querySelectorAll('.step-btn').forEach(b=> b.classList.toggle('active', +b.dataset.step === n));
+  if(n === 2 && !chatPlayed){ chatPlayed = true; playChat(); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.step-btn').forEach(b=> b.addEventListener('click', ()=> goToStep(+b.dataset.step)));
+document.getElementById('goToChatBtn').addEventListener('click', ()=> goToStep(2));
+
+/* ================= ONBOARDING ================= */
+const onbTotal = 8;
+let onbStep = 1;
+let fbConnected = false;
+
+function renderOnb(){
+  document.querySelectorAll('.onb-panel').forEach(p=> p.classList.toggle('active', +p.dataset.step === onbStep));
+  const dots = document.getElementById('onbDots');
+  dots.innerHTML = '';
+  for(let i=1;i<=onbTotal;i++){
+    const d = document.createElement('span');
+    d.className = 'onb-dot' + (i < onbStep ? ' done' : '') + (i === onbStep ? ' current' : '');
+    dots.appendChild(d);
+  }
+  const nav = document.getElementById('onbNav');
+  nav.style.display = onbStep === onbTotal ? 'none' : 'flex';
+  document.getElementById('onbBack').style.visibility = onbStep === 1 ? 'hidden' : 'visible';
+  document.getElementById('onbNext').textContent = onbStep === onbTotal - 1 ? 'Générer mon lien' : 'Continuer';
+  const next = document.getElementById('onbNext');
+  const blockedByFb = onbStep === 2 && !fbConnected;
+  next.disabled = blockedByFb;
+  next.style.opacity = blockedByFb ? .4 : 1;
+  next.style.pointerEvents = blockedByFb ? 'none' : 'auto';
+}
+document.getElementById('onbNext').addEventListener('click', ()=>{ if(onbStep < onbTotal){ onbStep++; renderOnb(); } });
+document.getElementById('onbBack').addEventListener('click', ()=>{ if(onbStep > 1){ onbStep--; renderOnb(); } });
+document.getElementById('fbConnectBtn').addEventListener('click', (e)=>{
+  const btn = e.currentTarget;
+  btn.textContent = 'Connexion en cours…';
+  btn.style.pointerEvents = 'none';
+  setTimeout(()=>{
+    fbConnected = true;
+    const box = document.getElementById('fbConnectBox');
+    box.classList.add('connected');
+    box.innerHTML = `
+      <div class="fb-connected-row">
+        <div class="fb-connected-check">✓</div>
+        <div class="fb-connected-num"><div class="lbl">Numéro connecté</div><div class="num">+243 89 612 34 56</div></div>
+      </div>`;
+    renderOnb();
+  }, 900);
+});
+document.getElementById('copyLinkBtn').addEventListener('click', (e)=>{
+  e.target.textContent = 'Copié ✓';
+  setTimeout(()=> e.target.textContent = 'Copier', 1600);
+});
+(function buildQr(){
+  const box = document.getElementById('qrBox');
+  for(let i=0;i<36;i++){ box.appendChild(document.createElement('i')); }
+})();
+renderOnb();
+
+/* ================= CHAT ================= */
+const chatScript = [
+  {type:'system', text:"Aujourd'hui"},
+  {type:'client', text:'Bonjour, vous faites les tresses ?', time:'09:12'},
+  {type:'bot', text:"Bonjour et bienvenue chez Maman Nathalie 🌸 Oui ! Vous cherchez quel style : tresses simples, box braids ou tissage ?", time:'09:12'},
+  {type:'client', text:'Box braids, c\u2019est combien ?', time:'09:13'},
+  {type:'bot', text:'Les box braids sont à 25 000 FC (fournitures non comprises), environ 3h. Je vous propose un créneau ?', time:'09:13'},
+  {type:'client', text:'Oui stp, plutôt le week-end', time:'09:14'},
+  {type:'bot', text:'J\u2019ai un créneau samedi à 10h00. Je vous le réserve le temps que Maman Nathalie confirme 👍', time:'09:14'},
+  {type:'pill', text:'🔒 Créneau verrouillé · samedi 10h00'},
+  {type:'client', text:'Vous faites aussi la couleur ?', time:'09:15'},
+  {type:'bot', text:'Bonne question, je transmets directement à Maman Nathalie — elle vous répond très vite 🙏', time:'09:15'},
+  {type:'pill', text:'✅ Rendez-vous confirmé par Maman Nathalie'},
+  {type:'bot', text:'C\u2019est confirmé, Grace ! Un rappel vous sera envoyé la veille. À samedi 🙌', time:'09:41'},
+];
+
+function playChat(){
+  const body = document.getElementById('waBody');
+  body.innerHTML = '';
+  let t = 150;
+  chatScript.forEach(m=>{
+    if(m.type === 'bot'){
+      const typeAt = t;
+      setTimeout(()=> showTyping(body), typeAt);
+      t += 700;
+      setTimeout(()=>{ removeTyping(body); appendMsg(body, m); }, t);
+      t += 500;
+    } else {
+      setTimeout(()=> appendMsg(body, m), t);
+      t += (m.type === 'system' || m.type === 'pill') ? 350 : 650;
+    }
+  });
+}
+function appendMsg(body, m){
+  const el = document.createElement('div');
+  if(m.type === 'system'){ el.className = 'wa-date'; el.textContent = m.text; }
+  else if(m.type === 'pill'){ el.className = 'wa-pill'; el.textContent = m.text; }
+  else { el.className = 'bubble ' + m.type; el.innerHTML = m.text + '<span class="bubble-time">'+m.time+'</span>'; }
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+function showTyping(body){
+  const t = document.createElement('div');
+  t.className = 'bubble bot typing';
+  t.id = 'typingIndicator';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(t);
+  body.scrollTop = body.scrollHeight;
+}
+function removeTyping(body){ const t = document.getElementById('typingIndicator'); if(t) t.remove(); }
+document.getElementById('replayChat').addEventListener('click', playChat);
+
+/* ================= DASHBOARD ================= */
+const statusMeta = {
+  attention:{label:'Nécessite intervention', cls:'warn'},
+  en_cours:{label:'En cours', cls:'info'},
+  termine:{label:'Terminée', cls:'ok'},
+  abandon:{label:'Abandonnée', cls:'muted'},
+};
+
+const conversations = [
+  {id:1, name:'Grace M.', phone:'+243 89 xxx 12', last:'Vous faites aussi la couleur ?', time:'09:15', status:'attention', unread:true,
+    transcript:[
+      {who:'client', text:'Box braids, c\u2019est combien ?'},
+      {who:'bot', text:'25 000 FC, environ 3h. Je vous propose un créneau ?'},
+      {who:'client', text:'Oui, plutôt le week-end'},
+      {who:'bot', text:'Samedi 10h00, je le réserve 👍'},
+      {who:'client', text:'Vous faites aussi la couleur ?'},
+    ],
+    appt:{day:'Samedi 25 juil.', time:'10:00', service:'Box braids', price:'25 000 FC', status:'a_confirmer'}},
+  {id:2, name:'Odette L.', phone:'+243 81 xxx 44', last:'Merci beaucoup, à tout à l\u2019heure 😊', time:'08:50', status:'en_cours', unread:false,
+    transcript:[
+      {who:'client', text:'Une manucure aujourd\u2019hui c\u2019est possible ?'},
+      {who:'bot', text:'Oui ! J\u2019ai un créneau à 15h00, ça vous va ?'},
+      {who:'client', text:'Merci beaucoup, à tout à l\u2019heure 😊'},
+    ],
+    appt:{day:'Aujourd\u2019hui', time:'15:00', service:'Manucure', price:'8 000 FC', status:'a_confirmer'}},
+  {id:3, name:'Patrick K.', phone:'+243 82 xxx 09', last:'Vous êtes ouverts dimanche ?', time:'Hier', status:'termine', unread:false,
+    transcript:[
+      {who:'client', text:'Vous êtes ouverts dimanche ?'},
+      {who:'bot', text:'Non, nous sommes fermés le dimanche. Ouvert du lundi au samedi, 08h30–18h00.'},
+      {who:'client', text:'Ok merci !'},
+    ],
+    appt:null},
+  {id:4, name:'Bijou T.', phone:'+243 90 xxx 77', last:'Je veux annuler mon rendez-vous…', time:'Hier', status:'attention', unread:true,
+    transcript:[
+      {who:'client', text:'Je veux annuler mon rendez-vous de vendredi'},
+      {who:'bot', text:'Je transmets votre demande à Maman Nathalie tout de suite 🙏'},
+    ],
+    appt:{day:'Vendredi', time:'14:00', service:'Tissage', price:'25 000 FC', status:'a_confirmer'}},
+  {id:5, name:'Jean-Claude M.', phone:'+243 85 xxx 21', last:'(pas de réponse depuis 2 jours)', time:'Lun', status:'abandon', unread:false,
+    transcript:[
+      {who:'client', text:'Bonjour, vous êtes situés où exactement ?'},
+      {who:'bot', text:'Nous sommes à Limete, sur l\u2019avenue... (aucune réponse du client depuis)'},
+    ],
+    appt:null},
+];
+
+let selectedConvId = 1;
+let activeFilter = 'all';
+
+function renderConvList(){
+  const list = document.getElementById('convList');
+  list.innerHTML = '';
+  conversations.filter(c=> activeFilter === 'all' || c.status === activeFilter).forEach(c=>{
+    const meta = statusMeta[c.status];
+    const row = document.createElement('div');
+    row.className = 'conv-row' + (c.id === selectedConvId ? ' selected' : '') + (c.unread ? ' unread' : '');
+    row.innerHTML = `
+      <div class="conv-row-top"><span class="conv-name">${c.name}</span><span class="conv-time">${c.time}</span></div>
+      <div class="conv-row-bottom"><span class="conv-snippet">${c.last}</span><span class="pill ${meta.cls}">${meta.label}</span></div>`;
+    row.addEventListener('click', ()=>{ selectedConvId = c.id; renderConvList(); renderConvDetail(); });
+    list.appendChild(row);
+  });
+  const badge = document.querySelector('.dash-nav-item[data-view="conversations"] .badge');
+  badge.textContent = conversations.filter(c=>c.status==='attention').length;
+}
+
+function renderConvDetail(){
+  const c = conversations.find(x=> x.id === selectedConvId);
+  const detail = document.getElementById('convDetail');
+  if(!c){ detail.innerHTML = '<p class="empty">Sélectionnez une conversation</p>'; return; }
+  let apptHtml = '';
+  if(c.appt){
+    const confirmed = c.appt.status === 'confirme';
+    apptHtml = `
+      <div class="appt-box">
+        <div class="appt-box-row"><span>📅 ${c.appt.day} · ${c.appt.time}</span><span>${c.appt.service} — ${c.appt.price}</span></div>
+        <button class="btn-primary confirm-btn" data-id="${c.id}" ${confirmed ? 'disabled' : ''}>
+          ${confirmed ? '✅ Rendez-vous confirmé' : 'Confirmer le rendez-vous'}
+        </button>
+      </div>`;
+  }
+  detail.innerHTML = `
+    <div class="detail-head">
+      <div><strong>${c.name}</strong><div class="muted-text">${c.phone}</div></div>
+      <button class="btn-ghost small">Prendre la main</button>
+    </div>
+    <div class="mini-transcript">${c.transcript.map(t=> `<div class="mini-bubble ${t.who}">${t.text}</div>`).join('')}</div>
+    ${apptHtml}
+    <div class="fix-box">
+      <label>Proposer une meilleure réponse</label>
+      <div class="fix-input"><span>ex. préciser qu\u2019on ne travaille pas les jours fériés…</span><button class="btn-ghost tiny">Envoyer</button></div>
+      <p class="hint">Utilisé pour améliorer l\u2019assistant — pas de mise à jour automatique en V1.</p>
+    </div>`;
+  detail.querySelectorAll('.confirm-btn').forEach(btn=> btn.addEventListener('click', onConfirmAppt));
+}
+
+function onConfirmAppt(e){
+  const id = +e.currentTarget.dataset.id;
+  const c = conversations.find(x=> x.id === id);
+  c.appt.status = 'confirme';
+  c.status = 'termine';
+  c.unread = false;
+  renderConvList(); renderConvDetail(); renderApptView();
+  showToast('Rendez-vous confirmé — un rappel sera envoyé à ' + c.name.split(' ')[0] + ' avant le rendez-vous.');
+}
+
+function renderApptView(){
+  const wrap = document.getElementById('apptView');
+  const withAppt = conversations.filter(c=> c.appt);
+  wrap.innerHTML = withAppt.map(c=>{
+    const confirmed = c.appt.status === 'confirme';
+    return `<div class="appt-row">
+      <div class="appt-row-when"><span class="appt-day">${c.appt.day}</span><span class="appt-time">${c.appt.time}</span></div>
+      <div class="appt-row-who"><strong>${c.name}</strong><span class="muted-text">${c.appt.service} — ${c.appt.price}</span></div>
+      <button class="btn-primary small confirm-btn" data-id="${c.id}" ${confirmed ? 'disabled' : ''}>${confirmed ? '✅ Confirmé' : 'Confirmer'}</button>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.confirm-btn').forEach(btn=> btn.addEventListener('click', onConfirmAppt));
+}
+
+document.querySelectorAll('.filter-pill').forEach(p=> p.addEventListener('click', ()=>{
+  activeFilter = p.dataset.filter;
+  document.querySelectorAll('.filter-pill').forEach(x=> x.classList.remove('active'));
+  p.classList.add('active');
+  renderConvList();
+}));
+
+document.querySelectorAll('.dash-nav-item').forEach(item=> item.addEventListener('click', ()=>{
+  document.querySelectorAll('.dash-nav-item').forEach(x=> x.classList.remove('active'));
+  item.classList.add('active');
+  const view = item.dataset.view;
+  document.getElementById('dashViewTitle').textContent = item.dataset.title;
+  document.getElementById('convListWrap').hidden = view !== 'conversations';
+  document.getElementById('apptView').hidden = view !== 'appointments';
+  document.getElementById('settingsView').hidden = view !== 'settings';
+  document.getElementById('filterPills').style.display = view === 'conversations' ? 'flex' : 'none';
+}));
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.classList.remove('show'), 3800);
+}
+
+renderConvList();
+renderConvDetail();
+renderApptView();
+</script>
+</body>
+</html>

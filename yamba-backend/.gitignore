@@ -1,0 +1,30 @@
+# compiled output
+/dist
+/node_modules
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# environment variables
+.env
+.env.*.local
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea
+
+# OS
+.DS_Store
+
+# tests
+/coverage
+/.nyc_output
+
+# Prisma
+/generated

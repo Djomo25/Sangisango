@@ -1,0 +1,60 @@
+.appt-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #fff;
+  border: 1.5px solid var(--paper-dim);
+  border-radius: 11px;
+  padding: 11px 14px;
+}
+
+.appt-row-when {
+  display: flex;
+  flex-direction: column;
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.appt-day {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--clay);
+}
+
+.appt-time {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.appt-row-who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.appt-row-who strong {
+  font-size: 13px;
+  color: var(--text-dark);
+}
+
+.appt-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-annuler:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+@media (max-width: 760px) {
+  .appt-row {
+    flex-wrap: wrap;
+  }
+}

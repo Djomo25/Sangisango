@@ -1,0 +1,28 @@
+.pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 100px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.pill--warn {
+  background-color: var(--warn-bg);
+  color: var(--warn);
+}
+
+.pill--info {
+  background-color: var(--info-bg);
+  color: var(--info);
+}
+
+.pill--ok {
+  background-color: var(--ok-bg);
+  color: var(--ok);
+}
+
+.pill--muted {
+  background-color: var(--muted-bg);
+  color: var(--muted);
+}

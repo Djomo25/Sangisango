@@ -1,0 +1,40 @@
+.two-col {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.charger-plus {
+  align-self: center;
+  margin-top: 4px;
+  background: transparent;
+  border: 1.5px solid var(--paper-dim);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+.charger-plus:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,53 @@
+.conv-row {
+  background-color: #fff;
+  border: 1.5px solid var(--paper-dim);
+  border-radius: 11px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.conv-row:hover {
+  border-color: var(--gold-hover);
+}
+
+.conv-row--selectionnee {
+  border-color: var(--gold-deep);
+  background-color: #fffaf0;
+}
+
+.conv-row-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  gap: 8px;
+}
+
+.conv-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.conv-time {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.conv-row-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.conv-snippet {
+  font-size: 11.5px;
+  color: var(--text-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}

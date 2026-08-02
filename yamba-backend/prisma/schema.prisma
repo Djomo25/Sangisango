@@ -1,0 +1,167 @@
+// Schema Prisma — Yamba
+// Documentation : https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum TonAssistant {
+  chaleureux
+  professionnel
+  direct
+}
+
+enum StatutConversation {
+  en_cours
+  terminee
+  attention
+  abandon
+}
+
+enum ExpediteurMessage {
+  client
+  ia
+  commercant
+}
+
+enum StatutCreneau {
+  disponible
+  verrouille
+  reserve
+}
+
+enum StatutRendezVous {
+  a_confirmer
+  confirme
+  annule
+}
+
+// --- Modèles ---
+
+model Commercant {
+  id                      String       @id @default(cuid())
+  nom                     String
+  secteur                 String
+  commune                 String
+  telephone               String       @unique
+  numeroWhatsapp          String       @unique
+  tonAssistant            TonAssistant @default(chaleureux)
+  horaires                Json
+  servicesJson            Json
+  faqJson                 Json
+  statutVerificationMeta  String       @default("non_verifie")
+  lienConversion          String
+  // Code de connexion dashboard à usage unique (auth par WhatsApp, sans mot de
+  // passe) : généré par /auth/demander-code, vérifié puis effacé par /auth/verifier-code.
+  codeConnexion           String?
+  codeConnexionExpiration DateTime?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  conversations Conversation[]
+  creneaux      CreneauDisponible[]
+
+  @@map("commercants")
+}
+
+model Conversation {
+  id                String             @id @default(cuid())
+  commercantId      String
+  clientTelephone   String
+  clientNom         String?
+  statut            StatutConversation @default(en_cours)
+  canal             String             @default("whatsapp")
+  // Tant que cette date est dans le futur, l'IA ne répond plus automatiquement
+  // sur cette conversation (le commerçant a "pris la main" depuis le dashboard).
+  iaSuspendueJusqua DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  commercant  Commercant   @relation(fields: [commercantId], references: [id], onDelete: Cascade)
+  messages    Message[]
+  rendezVous  RendezVous[]
+  corrections Correction[]
+
+  @@index([commercantId])
+  @@index([statut])
+  @@map("conversations")
+}
+
+model Message {
+  id             String            @id @default(cuid())
+  conversationId String
+  expediteur     ExpediteurMessage
+  contenu        String            @db.Text
+  createdAt      DateTime          @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  corrections  Correction[]
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model CreneauDisponible {
+  id               String        @id @default(cuid())
+  commercantId     String
+  dateHeure        DateTime
+  dureeMinutes     Int
+  statut           StatutCreneau @default(disponible)
+  // Verrouillage temporaire anti double-booking : le créneau reste "verrouille"
+  // jusqu'à cette date, le temps que le commerçant confirme depuis le dashboard.
+  verrouilleJusqua DateTime?
+
+  commercant Commercant   @relation(fields: [commercantId], references: [id], onDelete: Cascade)
+  rendezVous RendezVous[]
+
+  @@index([commercantId])
+  @@index([statut])
+  @@index([dateHeure])
+  @@map("creneaux_disponibles")
+}
+
+model RendezVous {
+  id             String           @id @default(cuid())
+  conversationId String
+  // Pas de contrainte @unique ici : un créneau annulé redevient "disponible"
+  // et doit pouvoir être réservé par un nouveau rendez-vous par la suite. La
+  // règle "un seul rendez-vous actif à la fois" est déjà garantie ailleurs par
+  // le verrouillage atomique du créneau (voir CreneauxService.verrouillerCreneau),
+  // pas par une contrainte d'unicité globale et permanente sur cette colonne.
+  creneauId      String
+  service        String
+  prix           Float?
+  statut         StatutRendezVous @default(a_confirmer)
+  rappelEnvoye   Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  conversation Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  creneau      CreneauDisponible @relation(fields: [creneauId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([creneauId])
+  @@index([statut])
+  @@map("rendez_vous")
+}
+
+model Correction {
+  id                   String   @id @default(cuid())
+  conversationId       String
+  messageOriginalId    String
+  suggestionCommercant String   @db.Text
+  createdAt            DateTime @default(now())
+
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  messageOriginal Message      @relation(fields: [messageOriginalId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([messageOriginalId])
+  @@map("corrections")
+}

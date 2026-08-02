@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yamba-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yamba
+      POSTGRES_PASSWORD: yamba
+      POSTGRES_DB: yamba
+    ports:
+      # Port hôte 5433 (et non 5432) : un autre processus PostgreSQL local
+      # occupe déjà 5432 sur cette machine et intercepte les connexions
+      # avant qu'elles n'atteignent ce conteneur.
+      - '5433:5432'
+    volumes:
+      - yamba-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  yamba-postgres-data:

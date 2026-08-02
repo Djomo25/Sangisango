@@ -1,0 +1,34 @@
+:root {
+  /* --- Couleurs --- */
+  --ink: #161c36;
+  --ink-soft: #232b52;
+  --paper: #faf7f1;
+  --paper-dim: #f1ece1;
+  --gold: #f3b23e;
+  --gold-deep: #d89320;
+  --clay: #c1512e;
+  --ok: #2f9e5b;
+  --ok-bg: #e4f5ea;
+  --warn: #c8862a;
+  --warn-bg: #fcf1dc;
+  --info: #3e6fd9;
+  --info-bg: #e7eefc;
+  --muted: #8b93a6;
+  --muted-bg: #eef0f5;
+  --text-dark: #1b2140;
+  --text-body: #3c4260;
+  --wa-teal: #075e54;
+  --wa-bg: #e9e0d2;
+  --wa-out: #d9fdd3;
+
+  /* Issus de la démo HTML validée (reference/demo-mvp-kinshasa.html),
+     absents de la palette initiale du Prompt F0. */
+  --ink-line: rgba(255, 255, 255, 0.09);
+  --text-on-dark: #f7f4ec;
+  --gold-hover: #d8c79a;
+
+  /* --- Typographies --- */
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
