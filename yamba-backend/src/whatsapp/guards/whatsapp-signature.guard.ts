@@ -38,6 +38,9 @@ export class WhatsappSignatureGuard implements CanActivate {
     }
 
     if (!signatureHeader || typeof signatureHeader !== 'string' || !request.rawBody) {
+      this.logger.warn(
+        `Webhook rejeté : en-tête X-Hub-Signature-256 absent (rawBody présent : ${!!request.rawBody}).`,
+      );
       throw new UnauthorizedException('Signature de webhook manquante');
     }
 
@@ -51,6 +54,9 @@ export class WhatsappSignatureGuard implements CanActivate {
       timingSafeEqual(receivedBuffer, expectedBuffer);
 
     if (!isValid) {
+      this.logger.warn(
+        'Webhook rejeté : signature invalide (WHATSAPP_APP_SECRET ne correspond probablement pas à celui de Meta).',
+      );
       throw new UnauthorizedException('Signature de webhook invalide');
     }
 
